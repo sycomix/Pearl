@@ -28,5 +28,4 @@ def fontsize_for(
         max_number_of_characters_at_max_fontsize * max_fontsize
     )
     number_of_characters = len(string)
-    fontsize = total_number_of_title_points // number_of_characters
-    return fontsize
+    return total_number_of_title_points // number_of_characters

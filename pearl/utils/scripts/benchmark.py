@@ -370,9 +370,7 @@ def collect_data(
         data_by_environment_and_method[environment][method] = returns
         dir_name = save_path + str(method) + "/" + str(environment) + "/"
         os.makedirs(dir_name, exist_ok=True)
-        with open(
-            dir_name + "returns_data_seed_" + str(seed) + ".pickle", "wb"
-        ) as handle:
+        with open(f"{dir_name}returns_data_seed_{seed}.pickle", "wb") as handle:
             # @lint-ignore PYTHONPICKLEISBAD
             pickle.dump(
                 data_by_environment_and_method, handle, protocol=pickle.HIGHEST_PROTOCOL
@@ -404,7 +402,7 @@ def generate_plots(
         filename = f"{environment_name} and {method} and seed = {seed}.png"
         logging.info(f"Saving plot to {os.getcwd()}/{filename}")
         plt.savefig(filename)
-        plt.savefig(dir_name + "/" + filename)
+        plt.savefig(f"{dir_name}/{filename}")
         plt.close()
 
 

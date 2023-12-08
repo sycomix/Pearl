@@ -57,12 +57,9 @@ def mlp_block(
     dims = [input_dim] + hidden_dims + [output_dim]
     layers = []
     for i in range(len(dims) - 2):
-        single_layers = []
         input_dim_current_layer = dims[i]
         output_dim_current_layer = dims[i + 1]
-        single_layers.append(
-            nn.Linear(input_dim_current_layer, output_dim_current_layer)
-        )
+        single_layers = [nn.Linear(input_dim_current_layer, output_dim_current_layer)]
         if use_layer_norm:
             single_layers.append(nn.LayerNorm(output_dim_current_layer))
         if dropout_ratio > 0:
@@ -83,8 +80,7 @@ def mlp_block(
                 )
         layers.append(single_layer_model)
 
-    last_layer = []
-    last_layer.append(nn.Linear(dims[-2], dims[-1]))
+    last_layer = [nn.Linear(dims[-2], dims[-1])]
     if last_activation is not None:
         last_layer.append(ACTIVATION_MAP[last_activation]())
     last_layer_model = nn.Sequential(*last_layer)

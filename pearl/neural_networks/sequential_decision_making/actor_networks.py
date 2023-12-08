@@ -44,8 +44,7 @@ def action_scaling(
     device = input_action.device
     low = action_space.low.clone().detach().to(device)
     high = action_space.high.clone().detach().to(device)
-    centered_and_scaled_action = (((high - low) * (input_action + 1.0)) / 2) + low
-    return centered_and_scaled_action
+    return (((high - low) * (input_action + 1.0)) / 2) + low
 
 
 def noise_scaling(action_space: ActionSpace, input_noise: torch.Tensor) -> torch.Tensor:
@@ -65,8 +64,7 @@ def noise_scaling(action_space: ActionSpace, input_noise: torch.Tensor) -> torch
     device = input_noise.device
     low = torch.tensor(action_space.low).to(device)
     high = torch.tensor(action_space.high).to(device)
-    scaled_noise = ((high - low) / 2) * input_noise
-    return scaled_noise
+    return ((high - low) / 2) * input_noise
 
 
 class ActorNetwork(nn.Module):
@@ -132,10 +130,7 @@ class VanillaActorNetwork(ActorNetwork):
             state_batch: batch of states with shape (batch_size, state_dim) or (state_dim)
             available_actions and unavailable_actions_mask are not used in this parent class.
         """
-        policy_distribution = self.forward(
-            state_batch
-        )  # shape (batch_size, available_actions) or (available_actions)
-        return policy_distribution
+        return self.forward(state_batch)
 
     def get_action_prob(
         self,
@@ -344,8 +339,7 @@ class VanillaContinuousActorNetwork(ActorNetwork):
             action: sampled action, scaled to the action space bounds
         """
         normalized_action = self._model(x)
-        action = action_scaling(self._action_space, normalized_action)
-        return action
+        return action_scaling(self._action_space, normalized_action)
 
 
 class GaussianActorNetwork(ActorNetwork):
@@ -373,7 +367,7 @@ class GaussianActorNetwork(ActorNetwork):
         super(GaussianActorNetwork, self).__init__(
             input_dim, hidden_dims, output_dim, action_space
         )
-        if len(hidden_dims) < 1:
+        if not hidden_dims:
             raise ValueError(
                 "The hidden dims cannot be empty for a gaussian actor network."
             )
@@ -449,10 +443,7 @@ class GaussianActorNetwork(ActorNetwork):
         if log_prob.dim() == 2:
             log_prob = log_prob.sum(dim=1, keepdim=True)
 
-        if get_log_prob:
-            return action, log_prob
-        else:
-            return action
+        return (action, log_prob) if get_log_prob else action
 
     def get_log_probability(
         self, state_batch: torch.Tensor, action_batch: torch.Tensor

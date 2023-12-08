@@ -125,9 +125,7 @@ def filter_batch_by_bootstrap_mask(
     mask: Optional[torch.Tensor] = batch.bootstrap_mask
 
     def _filter_tensor(x: Optional[torch.Tensor]) -> Optional[torch.Tensor]:
-        if x is None or mask is None:
-            return None
-        return x[mask[:, z] == 1]
+        return None if x is None or mask is None else x[mask[:, z] == 1]
 
     filtered_state = _filter_tensor(batch.state)
     filtered_action = _filter_tensor(batch.action)

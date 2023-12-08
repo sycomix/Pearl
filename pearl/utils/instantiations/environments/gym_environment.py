@@ -132,11 +132,7 @@ class GymEnvironment(Environment):
             raise ValueError(
                 f"Unexpected action result from Gym (expected 4 or 5 elements): {gym_action_result}"
             )
-        if "cost" in info.keys():
-            cost = info["cost"]
-        else:
-            cost = None
-
+        cost = info["cost"] if "cost" in info.keys() else None
         if "available_action_space" in info.keys():
             available_action_space = info["available_action_space"]
         else:

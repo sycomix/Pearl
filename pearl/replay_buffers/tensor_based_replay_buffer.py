@@ -61,9 +61,7 @@ class TensorBasedReplayBuffer(ReplayBuffer):
         return torch.tensor([reward], device=self._device)
 
     def _process_single_cost(self, cost: Optional[float]) -> Optional[torch.Tensor]:
-        if cost is None:
-            return None
-        return torch.tensor([cost], device=self._device)
+        return None if cost is None else torch.tensor([cost], device=self._device)
 
     def _process_single_done(self, done: bool) -> torch.Tensor:
         return torch.tensor([done], device=self._device)  # (1,)
@@ -206,23 +204,18 @@ class TensorBasedReplayBuffer(ReplayBuffer):
                     x.curr_unavailable_actions_mask
                 )
 
-            if not is_action_continuous and has_next_available_actions:
-                next_available_actions_list.append(x.next_available_actions)
-                next_unavailable_actions_mask_list.append(
-                    x.next_unavailable_actions_mask
-                )
+                if has_next_available_actions:
+                    next_available_actions_list.append(x.next_available_actions)
+                    next_unavailable_actions_mask_list.append(
+                        x.next_unavailable_actions_mask
+                    )
 
         state_batch = torch.cat(state_list)
         action_batch = torch.cat(action_list)
         reward_batch = torch.cat(reward_list)
         done_batch = torch.cat(done_list)
-        cum_reward_batch = None
-        if has_cost_available:
-            cost_batch = torch.cat(cost_list)
-        else:
-            cost_batch = None
-        if not has_none_cum_reward:
-            cum_reward_batch = torch.cat(cum_reward_list)
+        cost_batch = torch.cat(cost_list) if has_cost_available else None
+        cum_reward_batch = None if has_none_cum_reward else torch.cat(cum_reward_list)
         next_state_batch, next_action_batch = None, None
         if has_next_state:
             next_state_batch = torch.cat(next_state_list)

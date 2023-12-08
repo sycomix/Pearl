@@ -137,7 +137,7 @@ class TabularQLearning(PolicyLearner):
             #  `Iterable[Variable[SupportsRichComparisonT (bound to
             #  Union[SupportsDunderGT[typing.Any],
             #  SupportsDunderLT[typing.Any]])]]` but got `List[Number]`.
-            max_next_q_value = max(next_q_values) if next_q_values else 0
+            max_next_q_value = max(next_q_values, default=0)
             next_state_value = self.discount_factor * max_next_q_value
 
         # pyre-fixme[58]: `+` is not supported for operand types `Number` and
@@ -184,9 +184,9 @@ class TabularQLearning(PolicyLearner):
         exploration_module = self._exploration_module
         assert isinstance(exploration_module, EGreedyExploration)
         items = [
-            "α=" + str(self.learning_rate),
-            "ε=" + str(exploration_module.epsilon),
-            "λ=" + str(self.discount_factor),
+            f"α={str(self.learning_rate)}",
+            f"ε={str(exploration_module.epsilon)}",
+            f"λ={str(self.discount_factor)}",
         ]
         return "Q-Learning" + (
             " (" + ", ".join(str(item) for item in items) + ")" if items else ""

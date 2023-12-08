@@ -103,17 +103,16 @@ class DeepTDLearning(PolicyLearner):
                     action_hidden_dims=action_hidden_dims,
                     output_dim=1,
                 )
-            else:
-                assert (
-                    network_type is VanillaQValueNetwork
-                    or network_type is DuelingQValueNetwork
-                )
-                return network_type(
-                    state_dim=state_dim,
-                    action_dim=self._action_representation_module.representation_dim,
-                    hidden_dims=hidden_dims,
-                    output_dim=1,
-                )
+            assert (
+                network_type is VanillaQValueNetwork
+                or network_type is DuelingQValueNetwork
+            )
+            return network_type(
+                state_dim=state_dim,
+                action_dim=self._action_representation_module.representation_dim,
+                hidden_dims=hidden_dims,
+                output_dim=1,
+            )
 
         if network_instance is not None:
             self._Q: QValueNetwork = network_instance

@@ -123,8 +123,8 @@ class ImplicitQLearning(ActorCriticBase):
         # discrete and continuous actor networks, as well as stocahstic and deterministic actors
         if self._is_action_continuous:
             torch._assert(
-                actor_network_type == GaussianActorNetwork
-                or actor_network_type == VanillaContinuousActorNetwork,
+                actor_network_type
+                in [GaussianActorNetwork, VanillaContinuousActorNetwork],
                 "continuous action space requires a deterministic or a stochastic actor which works"
                 "with continuous action spaces",
             )
@@ -269,15 +269,13 @@ class ImplicitQLearning(ActorCriticBase):
             self._critic, TwinCritic
         ), "Critic in ImplicitQLearning should be TwinCritic"
 
-        # update twin critics towards target
-        loss_critic_update = twin_critic_action_value_update(
+        return twin_critic_action_value_update(
             state_batch=batch.state,
             action_batch=batch.action,
             expected_target_batch=target,
             optimizer=self._critic_optimizer,
             critic=self._critic,
         )
-        return loss_critic_update
 
     # we do not expect this method to be reused in different algorithms, so it is defined here
     # To Do: add a utils method separately if needed in future for other algorithms to reuse

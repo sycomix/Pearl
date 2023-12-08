@@ -50,10 +50,7 @@ def main() -> None:
     env = GymEnvironment("CartPole-v1")
 
     assert len(sys.argv) <= 2, "Usage: <figure_gen> <num_episodes>"
-    num_episodes = 1000  # default value
-    if len(sys.argv) == 2:
-        num_episodes = int(sys.argv[1])
-
+    num_episodes = int(sys.argv[1]) if len(sys.argv) == 2 else 1000
     agent = PearlAgent(
         policy_learner=DeepQLearning(
             state_dim=env.observation_space.shape[0],

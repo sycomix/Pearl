@@ -70,19 +70,15 @@ def compute_cql_loss(
         1, batch.action
     )
 
-    # Step 4
-    cql_loss = (
+    return (
         torch.logsumexp(q_values_state_all_available_actions, dim=-1).mean()
         - q_values_state_actions_in_batch.mean()
     )
 
-    return cql_loss
-
 
 def compute_elementwise_huber_loss(input_errors: Tensor, kappa: float = 1.0) -> Tensor:
-    huber_loss = torch.where(
+    return torch.where(
         torch.abs(input_errors) <= kappa,
         0.5 * (input_errors.pow(2)),
         kappa * (torch.abs(input_errors) - (0.5 * kappa)),
     )
-    return huber_loss

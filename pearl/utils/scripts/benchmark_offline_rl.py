@@ -74,14 +74,7 @@ def get_random_agent_returns(
     print("getting returns of a random agent")
 
     # check for a pickle file with episodic returns saved in the file path
-    if file_path is not None:
-        if os.path.isfile(file_path):
-            print(f"loading returns from file {file_path}")
-            with open(file_path, "rb") as file:
-                random_agent_returns = pickle.load(file)
-        else:
-            raise FileNotFoundError(f"No file found at {file_path}")
-    else:
+    if file_path is None:
         print(
             "no returns file path provided; proceeding to collect data from environment directly"
         )
@@ -100,14 +93,17 @@ def get_random_agent_returns(
             print(f"episode {i}, return={g}")
             random_agent_returns.append(g)
 
-            with open(
-                save_path + "returns_random_agent" + ".pickle",
-                "wb",
-            ) as handle:
+            with open(f"{save_path}returns_random_agent.pickle", "wb") as handle:
                 pickle.dump(
                     random_agent_returns, handle, protocol=pickle.HIGHEST_PROTOCOL
                 )
 
+    elif os.path.isfile(file_path):
+        print(f"loading returns from file {file_path}")
+        with open(file_path, "rb") as file:
+            random_agent_returns = pickle.load(file)
+    else:
+        raise FileNotFoundError(f"No file found at {file_path}")
     return random_agent_returns
 
 
@@ -161,18 +157,14 @@ def evaluate_offline_rl(
     # is provided)
     os.makedirs(data_save_path, exist_ok=True)
 
-    if url is not None or data_path is not None:
-        if url is not None:
-            print("downloading data from the given url")
+    if url is not None:
+        print("downloading data from the given url")
+    elif data_path is not None:
+        if os.path.isfile(data_path):
+            print("reading data from the given path")
         else:
-            if os.path.isfile(data_path):
-                print("reading data from the given path")
-            else:
-                raise FileNotFoundError(f"No file found at {data_path}")
+            raise FileNotFoundError(f"No file found at {data_path}")
 
-        offline_data_replay_buffer = get_offline_data_in_buffer(
-            is_action_continuous, url, data_path, size=data_size
-        )
     else:
         if file_name is None:
             raise ValueError("Must provide a name of file to store data.")
@@ -191,10 +183,9 @@ def evaluate_offline_rl(
         print("\n")
         print("collected data; starting import in replay buffer")
         data_path = data_save_path + file_name
-        offline_data_replay_buffer = get_offline_data_in_buffer(
-            is_action_continuous, url, data_path, size=data_size
-        )
-
+    offline_data_replay_buffer = get_offline_data_in_buffer(
+        is_action_continuous, url, data_path, size=data_size
+    )
     print("offline data in replay buffer; start offline training")
     offline_learning(
         offline_agent=offline_agent,
@@ -286,14 +277,14 @@ if __name__ == "__main__":
         device_id=device_id,
     )
 
-    data_save_path = "../fbsource/fbcode/pearl/offline_rl_data/" + env_name + "/"
+    data_save_path = f"../fbsource/fbcode/pearl/offline_rl_data/{env_name}/"
     # dataset = "small_2"
     # dataset = "medium"
 
     # this is only for end to end testing check
     # for benchmarking, using the "small_2", "medium" or "large" datasets
     dataset = "small"
-    file_name = "offline_raw_transitions_dict_" + dataset + ".pt"
+    file_name = f"offline_raw_transitions_dict_{dataset}.pt"
 
     print(" ")
     print(
@@ -328,7 +319,7 @@ if __name__ == "__main__":
     print("\n")
 
     # getting the returns of a random agent
-    random_returns_file_path = data_save_path + "returns_random_agent.pickle"
+    random_returns_file_path = f"{data_save_path}returns_random_agent.pickle"
     random_agent_returns = get_random_agent_returns(
         agent=data_collection_agent,
         env=env,

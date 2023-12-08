@@ -50,9 +50,9 @@ def create_offline_data(
 
     print(f"collecting data from env: {env} using agent: {agent}")
 
-    epi_returns = []
     epi = 0
     raw_transitions_buffer = deque([], maxlen=max_len_offline_data)
+    epi_returns = []
     while len(raw_transitions_buffer) < max_len_offline_data:
         g = 0
         observation, action_space = env.reset(seed=seed)
@@ -95,13 +95,7 @@ def create_offline_data(
     torch.save(raw_transitions_buffer, save_path + file_name)
 
     # save training returns of the data collection agent
-    with open(
-        save_path
-        + "training_returns_data_collection_agent_"
-        + str(max_len_offline_data)
-        + ".pickle",
-        "wb",
-    ) as handle:
+    with open(f"{save_path}training_returns_data_collection_agent_{max_len_offline_data}.pickle", "wb") as handle:
         # @lint-ignore PYTHONPICKLEISBAD
         pickle.dump(epi_returns, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -127,13 +121,7 @@ def create_offline_data(
         print(f"\repisode {i}, return={g}", end="")
         evaluation_returns.append(g)
 
-    with open(
-        save_path
-        + "evaluation_returns_data_collection_agent_"
-        + str(max_len_offline_data)
-        + ".pickle",
-        "wb",
-    ) as handle:
+    with open(f"{save_path}evaluation_returns_data_collection_agent_{max_len_offline_data}.pickle", "wb") as handle:
         # @lint-ignore PYTHONPICKLEISBAD
         pickle.dump(evaluation_returns, handle, protocol=pickle.HIGHEST_PROTOCOL)
 

@@ -254,8 +254,7 @@ class PearlAgent(Agent):
         )
 
     def __str__(self) -> str:
-        items = []
-        items.append(self.policy_learner)
+        items = [self.policy_learner]
         if type(self.safety_module) is not PearlAgent.default_safety_module_type:
             items.append(self.safety_module)
         if (

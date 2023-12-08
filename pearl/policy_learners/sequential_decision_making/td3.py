@@ -160,14 +160,13 @@ class TD3(DeepDeterministicPolicyGradient):
 
         # update twin critics towards bellman target
         assert isinstance(self._critic, TwinCritic)
-        loss_critic_update = twin_critic_action_value_update(
+        return twin_critic_action_value_update(
             state_batch=batch.state,
             action_batch=batch.action,
             expected_target_batch=expected_state_action_values,
             optimizer=self._critic_optimizer,
             critic=self._critic,
         )
-        return loss_critic_update
 
 
 class RCTD3(TD3):
@@ -335,10 +334,9 @@ class RCTD3(TD3):
             discount_factor=self.cost_discount_factor,
             critic_key="cost",
         )
-        # modify the keys name
-        train_cost_critic_res_new = {}
-        for key, value in train_cost_critic_res.items():
-            train_cost_critic_res_new["cost_{}".format(key)] = value
+        train_cost_critic_res_new = {
+            f"cost_{key}": value for key, value in train_cost_critic_res.items()
+        }
         res.update(train_critic_res)
         res.update(train_cost_critic_res_new)
         return res
@@ -353,7 +351,7 @@ class RCTD3(TD3):
         critic_key: str = "reward",
     ) -> Dict[str, Any]:
 
-        assert critic_key in ["reward", "cost"]
+        assert critic_key in {"reward", "cost"}
         with torch.no_grad():
             # sample next_action from actor's target network; shape (batch_size, action_dim)
             next_action = self._actor_target.sample_action(batch.next_state)
@@ -398,9 +396,7 @@ class RCTD3(TD3):
                 next_q * discount_factor * (1 - batch.done.float())
             ) + reward_or_cost  # (batch_size)
 
-        # update critics towards bellman target
-
-        loss_critic_update = twin_critic_action_value_update(
+        return twin_critic_action_value_update(
             state_batch=batch.state,
             action_batch=batch.action,
             expected_target_batch=expected_state_action_values,
@@ -408,4 +404,3 @@ class RCTD3(TD3):
             # pyre-fixme
             critic=critic,
         )
-        return loss_critic_update

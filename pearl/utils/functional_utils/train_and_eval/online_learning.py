@@ -276,8 +276,8 @@ def run_episode(
 
     info = {"return": cum_reward}
     if num_risky_sa is not None:
-        info.update({"risky_sa_ratio": num_risky_sa / episode_steps})
+        info["risky_sa_ratio"] = num_risky_sa / episode_steps
     if cum_cost is not None:
-        info.update({"return_cost": cum_cost})
+        info["return_cost"] = cum_cost
 
     return info, episode_steps

@@ -132,10 +132,9 @@ class TestOnPolicyEpisodicReplayBuffer(unittest.TestCase):
         returns_buffer = batch.cum_reward[order]
         self.assertTrue(
             torch.equal(
-                returns_buffer[0 : self.trajectory_len],
-                torch.tensor(self.returns),
+                returns_buffer[: self.trajectory_len], torch.tensor(self.returns)
             )
-        )  # 1st trajectory
+        )
         self.assertTrue(
             torch.equal(returns_buffer[self.trajectory_len :], torch.tensor(returns_2))
         )  # 2nd trajectory
@@ -144,7 +143,7 @@ class TestOnPolicyEpisodicReplayBuffer(unittest.TestCase):
         done = batch.done[order]
         self.assertTrue(
             torch.equal(
-                done[0 : self.trajectory_len],
+                done[: self.trajectory_len],
                 torch.eye(self.trajectory_len)[self.trajectory_len - 1],
             )
         )
@@ -159,13 +158,13 @@ class TestOnPolicyEpisodicReplayBuffer(unittest.TestCase):
         actions = batch.action[order]
         self.assertTrue(
             torch.equal(
-                actions[0 : self.trajectory_len], torch.arange(self.action_size)
+                actions[: self.trajectory_len], torch.arange(self.action_size)
             )
         )
         self.assertTrue(
             torch.equal(
                 actions[self.trajectory_len :],
-                torch.arange(self.action_size)[0:trajectory_len_2],
+                torch.arange(self.action_size)[:trajectory_len_2],
             )
         )
 

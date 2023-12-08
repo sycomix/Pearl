@@ -123,5 +123,4 @@ class QuantileNetworkMeanVarianceSafetyModule(RiskSensitiveSafetyModule):
         variance = (
             quantile_differences * torch.square(q_value_distribution - mean_value)
         ).sum(dim=-1, keepdim=True)
-        variance_adjusted_mean = (mean_value - (self._beta * variance)).view(-1)
-        return variance_adjusted_mean
+        return (mean_value - (self._beta * variance)).view(-1)

@@ -117,15 +117,13 @@ class SoftActorCritic(ActorCriticBase):
         ) + reward_batch  # (batch_size), r + gamma * V(s)
 
         assert isinstance(self._critic, TwinCritic)
-        loss_critic_update = twin_critic_action_value_update(
+        return twin_critic_action_value_update(
             state_batch=batch.state,
             action_batch=batch.action,
             expected_target_batch=expected_state_action_values,
             optimizer=self._critic_optimizer,
             critic=self._critic,
         )
-
-        return loss_critic_update
 
     @torch.no_grad()
     def _get_next_state_expected_values(self, batch: TransitionBatch) -> torch.Tensor:
