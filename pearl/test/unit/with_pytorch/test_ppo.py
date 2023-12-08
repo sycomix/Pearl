@@ -35,9 +35,9 @@ class TestPPO(unittest.TestCase):
             for group in policy_learner._actor_optimizer.param_groups
             + policy_learner._critic_optimizer.param_groups
         )
-        model_params_count = sum([1 for _ in policy_learner._actor.parameters()]) + sum(
-            [1 for _ in policy_learner._critic.parameters()]
-        )
+        model_params_count = sum(
+            1 for _ in policy_learner._actor.parameters()
+        ) + sum(1 for _ in policy_learner._critic.parameters())
         self.assertEqual(optimizer_params_count, model_params_count)
 
     def test_training_round_setup(self) -> None:

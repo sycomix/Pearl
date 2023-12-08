@@ -131,13 +131,10 @@ class DeepDeterministicPolicyGradient(ActorCriticBase):
 
         assert isinstance(self._critic, TwinCritic), "DDPG requires TwinCritic critic"
 
-        # update twin critics towards bellman target
-        loss_critic_update = twin_critic_action_value_update(
+        return twin_critic_action_value_update(
             state_batch=batch.state,
             action_batch=batch.action,
             expected_target_batch=expected_state_action_values,
             optimizer=self._critic_optimizer,
             critic=self._critic,
         )
-
-        return loss_critic_update

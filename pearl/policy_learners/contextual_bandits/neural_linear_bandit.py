@@ -52,7 +52,7 @@ class NeuralLinearBandit(NeuralBandit):
         **kwargs: Any,
     ) -> None:
         assert (
-            len(hidden_dims) >= 1
+            hidden_dims
         ), "hidden_dims should have at least one value to specify feature dim for linear regression"
         super(NeuralLinearBandit, self).__init__(
             feature_dim=feature_dim,

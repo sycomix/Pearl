@@ -44,7 +44,7 @@ class DiscreteSpace(Space):
             seed: Random seed used to initialize the random number generator of the
                 underlying Gym `Discrete` space.
         """
-        if len(elements) == 0:
+        if not elements:
             raise ValueError("`DiscreteSpace` requires at least one element.")
         self._set_validated_elements(elements=elements)  # sets self.elements
         self._gym_space = Discrete(n=len(elements), seed=seed, start=0)
@@ -96,8 +96,7 @@ class DiscreteSpace(Space):
         return self.elements[idx]
 
     def __iter__(self) -> Iterator[Tensor]:
-        for e in self.elements:
-            yield e
+        yield from self.elements
 
     def __getitem__(self, index: int) -> Tensor:
         return self.elements[index]

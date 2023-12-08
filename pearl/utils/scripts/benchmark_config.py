@@ -1215,7 +1215,7 @@ def get_env(env_name: str) -> GymEnvironment:
         return GymEnvironment(DynamicActionSpaceWrapper(gym.make("Acrobot-v1")))
     elif env_name == "CartPole-DynamicAction-v1":
         return GymEnvironment(DynamicActionSpaceWrapper(gym.make("CartPole-v1")))
-    elif env_name[-7:] == "_w_cost":
+    elif env_name.endswith("_w_cost"):
         env_name = env_name[:-7]
         return GymEnvironment(GymAvgTorqueWrapper(gym.make(env_name)))
     else:

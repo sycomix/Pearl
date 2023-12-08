@@ -61,9 +61,4 @@ class DeepSARSA(DeepTDLearning):
         assert next_state_batch is not None, "SARSA needs to have next state"
         assert next_action_batch is not None, "SARSA needs to have next action"
 
-        # use get_batch method instead of doing forward pass
-        next_state_action_values = self._Q_target.get_q_values(
-            next_state_batch, next_action_batch
-        )
-
-        return next_state_action_values
+        return self._Q_target.get_q_values(next_state_batch, next_action_batch)

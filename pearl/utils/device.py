@@ -46,7 +46,7 @@ def get_device(module: torch.nn.Module) -> torch.device:
 
 def get_pearl_device(device_id: int = -1) -> torch.device:
     if device_id != -1:
-        return torch.device("cuda:" + str(device_id))
+        return torch.device(f"cuda:{device_id}")
 
     try:
         # This is to pytorch distributed run, and should not affect

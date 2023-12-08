@@ -37,11 +37,7 @@ class TestNeuralContextualBandit(unittest.TestCase):
             weight=torch.randn(batch_size),
         )
 
-        # TEST LEARN
-        losses = []
-        for _ in range(1000):
-            losses.append(policy_learner.learn_batch(batch)["loss"])
-
+        losses = [policy_learner.learn_batch(batch)["loss"] for _ in range(1000)]
         self.assertGreater(1e-2, losses[-1])
 
         scores = policy_learner.get_scores(

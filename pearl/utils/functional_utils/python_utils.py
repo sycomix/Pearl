@@ -43,7 +43,4 @@ def find_argument(
     for arg in args:
         if isinstance(arg, arg_type):
             return arg
-    for k, v in kwargs.items():
-        if k == kwarg_key:
-            return v
-    return None
+    return next((v for k, v in kwargs.items() if k == kwarg_key), None)

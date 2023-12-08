@@ -79,10 +79,7 @@ class LinearRegression(nn.Module):
         # Create a tensor of ones to append
         ones = torch.ones_like(torch.select(x, dim=-1, index=0).unsqueeze(-1))
 
-        # Concatenate the input data with the tensor of ones along the last dimension
-        result = torch.cat((ones, x), dim=-1)
-
-        return result
+        return torch.cat((ones, x), dim=-1)
 
     @staticmethod
     def matrix_inv_fallback_pinv(A: torch.Tensor) -> torch.Tensor:
@@ -170,8 +167,7 @@ class LinearRegression(nn.Module):
 
     def calculate_sigma(self, x: torch.Tensor) -> torch.Tensor:
         x = self.append_ones(x)  # append a column of ones for intercept
-        sigma = torch.sqrt(self.batch_quadratic_form(x, self._inv_A))
-        return sigma
+        return torch.sqrt(self.batch_quadratic_form(x, self._inv_A))
 
     def __str__(self) -> str:
         return f"LinearRegression(A:\n{self._A}\nb:\n{self._b})"

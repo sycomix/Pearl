@@ -40,7 +40,7 @@ class TestEnsembles(unittest.TestCase):
         check that the values returned with for loop and vectorized implementation match
         """
         x = (
-            self.train_dataset[0:15][0]
+            self.train_dataset[:15][0]
             .unsqueeze(1)
             .repeat(1, self.network.ensemble_size, 1)
         )

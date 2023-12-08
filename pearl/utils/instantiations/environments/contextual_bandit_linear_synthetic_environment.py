@@ -82,11 +82,10 @@ class ContextualBanditLinearSyntheticEnvironment(ContextualBanditEnvironment):
         return self._linear_mapping
 
     def _generate_features_of_all_arms(self) -> torch.Tensor:
-        features_of_all_arms = torch.rand(
+        return torch.rand(
             self._action_space.n,
             self.arm_feature_vector_dim,
-        )  # features of each arm. (num of action, num of features)
-        return features_of_all_arms
+        )
 
     def _make_initial_linear_mapping(
         self,
@@ -114,8 +113,7 @@ class ContextualBanditLinearSyntheticEnvironment(ContextualBanditEnvironment):
         """
         # TODO: This assumes the action is an int tensor.
         context = self._get_context_for_arm(int(action.item()))
-        reward = self._compute_reward_from_context(context)
-        return reward
+        return self._compute_reward_from_context(context)
 
     def get_regret(self, action: Action) -> Value:
         """
@@ -142,14 +140,11 @@ class ContextualBanditLinearSyntheticEnvironment(ContextualBanditEnvironment):
         self,
         context: torch.Tensor,
     ) -> torch.Tensor:
-        if self._simple_linear_mapping:
-            reward = torch.sum(context).unsqueeze(dim=0)
-            # assume the linear relationship between context and reward :
-            # r_k = ONES @ g(f_k). This is convenient for debugging algorithms
-            # when the algorithms are being developed.
-        else:
-            reward = self._compute_reward_from_context_using_linear_mapping(context)
-        return reward
+        return (
+            torch.sum(context).unsqueeze(dim=0)
+            if self._simple_linear_mapping
+            else self._compute_reward_from_context_using_linear_mapping(context)
+        )
 
     def _compute_reward_from_context_using_linear_mapping(
         self,
@@ -164,13 +159,11 @@ class ContextualBanditLinearSyntheticEnvironment(ContextualBanditEnvironment):
 
         reward = self.linear_mapping(context)
 
-        if self.reward_noise_sigma > 0.0:
-            # add some Gaussian noise to each reward
-            noise = torch.randn_like(reward) * self.reward_noise_sigma
-            noisy_reward = reward + noise
-            return noisy_reward
-        else:
+        if self.reward_noise_sigma <= 0.0:
             return reward
+        # add some Gaussian noise to each reward
+        noise = torch.randn_like(reward) * self.reward_noise_sigma
+        return reward + noise
 
     def __str__(self) -> str:
         return "Bandit with reward linearly mapped from context feature vector"

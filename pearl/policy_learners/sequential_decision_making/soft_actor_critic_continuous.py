@@ -140,7 +140,7 @@ class ContinuousSoftActorCritic(ActorCriticBase):
         else:
             raise AssertionError("done_batch should not be None")
 
-        loss_critic_update = twin_critic_action_value_update(
+        return twin_critic_action_value_update(
             state_batch=batch.state,
             action_batch=batch.action,
             expected_target_batch=expected_state_action_values,
@@ -148,8 +148,6 @@ class ContinuousSoftActorCritic(ActorCriticBase):
             # pyre-fixme
             critic=self._critic,
         )
-
-        return loss_critic_update
 
     @torch.no_grad()
     def _get_next_state_expected_values(self, batch: TransitionBatch) -> torch.Tensor:

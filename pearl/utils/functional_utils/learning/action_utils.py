@@ -47,10 +47,7 @@ def argmax_random_tie_breaks(
         # pyre-fixme[16]: `Tensor` has no attribute `get_data`.
         max_indices_in_permuted_data = max_indices_in_permuted_data.get_data().long()
 
-    # Use the random permutation to get the original indices of the maximum elements
-    argmax_indices = random_col_indices[max_indices_in_permuted_data]
-
-    return argmax_indices
+    return random_col_indices[max_indices_in_permuted_data]
 
 
 def get_model_actions(
@@ -73,19 +70,17 @@ def get_model_actions(
         1D tensor of size (batch_size,)
     """
     if randomize_ties:
-        model_actions = argmax_random_tie_breaks(scores, mask)
-    else:
-        if mask is None:
+        return argmax_random_tie_breaks(scores, mask)
+    elif mask is None:
             # vanilla argmax - no masking or randomization
-            model_actions = torch.argmax(scores, dim=1)
-        else:
-            # mask out non-present arms
-            scores_masked = torch.masked.as_masked_tensor(scores, mask.bool())
-            model_actions = (
-                # pyre-fixme[16]: `Tensor` has no attribute `get_data`.
-                torch.argmax(scores_masked, dim=1).get_data()
-            )
-    return model_actions
+        return torch.argmax(scores, dim=1)
+    else:
+        # mask out non-present arms
+        scores_masked = torch.masked.as_masked_tensor(scores, mask.bool())
+        return (
+            # pyre-fixme[16]: `Tensor` has no attribute `get_data`.
+            torch.argmax(scores_masked, dim=1).get_data()
+        )
 
 
 def concatenate_actions_to_state(

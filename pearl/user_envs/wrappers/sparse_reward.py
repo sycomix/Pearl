@@ -29,14 +29,14 @@ class PendulumSparseRewardWrapper(gym.Wrapper):
     def sparse_reward(self):
         th, thdot = self.env.state
         threshold = 15 / 180 * np.pi
-        if (
-            self.angle_normalize(th) < threshold
-            and self.angle_normalize(th) > -threshold
-        ):
-            sparse_reward = 1
-        else:
-            sparse_reward = 0
-        return sparse_reward
+        return (
+            1
+            if (
+                self.angle_normalize(th) < threshold
+                and self.angle_normalize(th) > -threshold
+            )
+            else 0
+        )
 
     def angle_normalize(self, x):
         return ((x + np.pi) % (2 * np.pi)) - np.pi
@@ -55,7 +55,7 @@ class AcrobotSparseRewardWrapper(gym.Wrapper):
 
     def sparse_reward(self):
         s = self.env.state
-        return bool(-np.cos(s[0]) - np.cos(s[1] + s[0]) > 1.0)
+        return -np.cos(s[0]) - np.cos(s[1] + s[0]) > 1.0
 
 
 class MountainCarSparseRewardWrapper(gym.Wrapper):
@@ -71,8 +71,9 @@ class MountainCarSparseRewardWrapper(gym.Wrapper):
 
     def sparse_reward(self):
         position, velocity = self.env.state
-        return bool(
-            position >= self.env.goal_position and velocity >= self.env.goal_velocity
+        return (
+            position >= self.env.goal_position
+            and velocity >= self.env.goal_velocity
         )
 
 

@@ -53,10 +53,7 @@ class TestNeuralLinearBandits(unittest.TestCase):
             reward=state.sum(-1) + action.sum(-1),
             weight=torch.ones(batch_size),
         )
-        losses = []
-        for _ in range(1000):
-            losses.append(policy_learner.learn_batch(batch)["mlp_loss"])
-
+        losses = [policy_learner.learn_batch(batch)["mlp_loss"] for _ in range(1000)]
         self.assertGreater(1e-2, losses[-1])
         scores = policy_learner.get_scores(
             subjective_state=batch.state,

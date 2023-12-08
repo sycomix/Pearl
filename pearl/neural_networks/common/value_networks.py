@@ -153,8 +153,7 @@ class VanillaCNN(ValueNetwork):
     def forward(self, x: Tensor) -> Tensor:
         out_cnn = self._model_cnn(x)
         out_flattened = torch.flatten(out_cnn, start_dim=1, end_dim=-1)
-        out_fc = self._model_fc(out_flattened)
-        return out_fc
+        return self._model_fc(out_flattened)
 
 
 class CNNQValueNetwork(VanillaCNN):
@@ -463,30 +462,23 @@ class DuelingQValueNetwork(QValueNetwork):
 
         if curr_available_actions_batch is None:
             return self.forward(state_batch, action_batch).view(-1)
-        else:
-            # calculate the q value of all available actions
-            state_repeated_batch = extend_state_feature_by_available_action_space(
-                state_batch=state_batch,
-                curr_available_actions_batch=curr_available_actions_batch,
-            )  # shape: (batch_size, available_action_space_size, state_dim)
+        # calculate the q value of all available actions
+        state_repeated_batch = extend_state_feature_by_available_action_space(
+            state_batch=state_batch,
+            curr_available_actions_batch=curr_available_actions_batch,
+        )  # shape: (batch_size, available_action_space_size, state_dim)
 
-            # collect Q values of a state and all available actions
-            values_state_available_actions = self.forward(
-                state_repeated_batch, curr_available_actions_batch
-            )  # shape: (batch_size, available_action_space_size, action_dim)
+        # collect Q values of a state and all available actions
+        values_state_available_actions = self.forward(
+            state_repeated_batch, curr_available_actions_batch
+        )  # shape: (batch_size, available_action_space_size, action_dim)
 
-            # gather only the q value of the action that we are interested in.
-            action_idx = (
-                torch.argmax(action_batch, dim=1).unsqueeze(-1).unsqueeze(-1)
-            )  # one_hot to decimal
+        # gather only the q value of the action that we are interested in.
+        action_idx = (
+            torch.argmax(action_batch, dim=1).unsqueeze(-1).unsqueeze(-1)
+        )  # one_hot to decimal
 
-            # q value of (state, action) pair of interest
-            state_action_values = torch.gather(
-                values_state_available_actions, 1, action_idx
-            ).view(
-                -1
-            )  # shape: (batch_size)
-        return state_action_values
+        return torch.gather(values_state_available_actions, 1, action_idx).view(-1)
 
 
 """
@@ -541,8 +533,7 @@ class TwoTowerNetwork(QValueNetwork):
     def forward(self, state_action: Tensor) -> Tensor:
         state = state_action[..., : self._state_input_dim]
         action = state_action[..., self._state_input_dim :]
-        output = self.get_q_values(state_batch=state, action_batch=action)
-        return output
+        return self.get_q_values(state_batch=state, action_batch=action)
 
     def get_q_values(
         self,

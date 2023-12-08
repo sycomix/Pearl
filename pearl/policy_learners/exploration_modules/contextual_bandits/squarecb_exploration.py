@@ -168,8 +168,7 @@ class FastCBExploration(SquareCBExploration):
         """
         if max_val <= self.reward_lb:
             return torch.ones(empirical_gaps.shape) / action_num
-        prob_policy = torch.div(
+        return torch.div(
             (max_val - self.reward_lb),
             action_num * (max_val - self.reward_lb) + self._gamma * empirical_gaps,
         )
-        return prob_policy

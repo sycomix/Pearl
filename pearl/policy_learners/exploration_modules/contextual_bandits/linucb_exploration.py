@@ -62,16 +62,15 @@ class DisjointLinUCBExploration(LinUCBExploration):
         """
         assert representation is not None
         subjective_state = assert_is_tensor_like(subjective_state)
-        sigma = []
-        for i, linear_regression in enumerate(representation):
-            sigma.append(
-                super(DisjointLinUCBExploration, self).sigma(
-                    subjective_state=subjective_state[
-                        :, i, :
-                    ],  # different action has different feature
-                    representation=linear_regression,
-                )
+        sigma = [
+            super(DisjointLinUCBExploration, self).sigma(
+                subjective_state=subjective_state[
+                    :, i, :
+                ],  # different action has different feature
+                representation=linear_regression,
             )
+            for i, linear_regression in enumerate(representation)
+        ]
         sigma = torch.stack(sigma)
         # change from shape(action_count, batch_size) to shape(batch_size, action_count)
         sigma = sigma.permute(1, 0)

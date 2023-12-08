@@ -23,7 +23,5 @@ def assert_is_tensor_like(something: object) -> torch.Tensor:
     This will be eventually made unnecessary when RL types
     are better encapsulated.
     """
-    assert isinstance(something, torch.Tensor) or isinstance(
-        something, torch.fx.proxy.Proxy
-    )
+    assert isinstance(something, (torch.Tensor, torch.fx.proxy.Proxy))
     return something  # pyre-ignore

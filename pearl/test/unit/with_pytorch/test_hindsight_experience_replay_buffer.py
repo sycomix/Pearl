@@ -40,9 +40,7 @@ class TestHindsightExperienceReplayBuffer(unittest.TestCase):
         def reward_fn(state: torch.Tensor, action: torch.Tensor) -> int:
             goal = state[-2:]
             next_state = action_to_next_states[int(action.item())]
-            if torch.all(torch.eq(next_state, goal)):
-                return 0
-            return -1
+            return 0 if torch.all(torch.eq(next_state, goal)) else -1
 
         rb = HindsightExperienceReplayBuffer(
             capacity=10, goal_dim=2, reward_fn=reward_fn

@@ -133,8 +133,5 @@ class Ensemble(EpistemicNeuralNetwork):
 
         return self.models[ensemble_index](x)
 
-        if not persistent:
-            self._resample_epistemic_index()
-
     def _resample_epistemic_index(self) -> None:
         self.z = torch.randint(0, self.ensemble_size, (1,))

@@ -205,13 +205,7 @@ def evaluate_single(
     )
     method_name = method["name"]
     print(f"Run #{run_idx + 1} for {method_name} in {env_name}")
-    if (
-        method["name"] == "REINFORCE" or method["name"] == "PPO"
-    ):  # REINFORCE only performs learning at the end of each episode
-        learn_after_episode = True
-    else:
-        learn_after_episode = False
-
+    learn_after_episode = method["name"] in ["REINFORCE", "PPO"]
     info = online_learning(
         agent,
         env,
@@ -226,7 +220,7 @@ def evaluate_single(
     dir = f"outputs/{env_name}/{method_name}"
     os.makedirs(dir, exist_ok=True)
     for key in info:
-        np.save(dir + f"/{run_idx}_{key}.npy", info[key])
+        np.save(f"{dir}/{run_idx}_{key}.npy", info[key])
 
 
 def generate_plots(experiments, attributes) -> None:
@@ -257,17 +251,8 @@ def generate_one_plot(experiment, attributes):
             mean = data.mean(axis=0)
             std_error = data.std(axis=0) / np.sqrt(num_runs)
             x_list = record_period * np.arange(mean.shape[0])
-            if "num_steps" in experiment:
-                plt.plot(x_list, mean, label=method["name"])
-                plt.fill_between(x_list, mean - std_error, mean + std_error, alpha=0.2)
-            else:
-                plt.plot(x_list, mean, label=method["name"])
-                plt.fill_between(
-                    x_list,
-                    mean - std_error,
-                    mean + std_error,
-                    alpha=0.2,
-                )
+            plt.plot(x_list, mean, label=method["name"])
+            plt.fill_between(x_list, mean - std_error, mean + std_error, alpha=0.2)
         plt.title(env_name)
         if "num_steps" in experiment:
             plt.xlabel("Steps")

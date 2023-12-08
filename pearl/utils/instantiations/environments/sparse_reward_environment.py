@@ -88,9 +88,7 @@ class SparseRewardEnvironment(Environment):
         """
         assert self._agent_position is not None
         assert self._goal is not None
-        if math.dist(self._agent_position, self._goal) < self._reward_distance:
-            return True
-        return False
+        return math.dist(self._agent_position, self._goal) < self._reward_distance
 
 
 class ContinuousSparseRewardEnvironment(SparseRewardEnvironment):

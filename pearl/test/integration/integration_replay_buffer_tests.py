@@ -56,15 +56,11 @@ class IntegrationReplayBufferTests(unittest.TestCase):
             state = assert_is_tensor_like(state)
             next_state = state[:2] + torch.Tensor(env._actions[action]).to(state.device)
             goal = state[-2:]
-            if torch.all(torch.eq(next_state, goal)):
-                return True
-            return False
+            return bool(torch.all(torch.eq(next_state, goal)))
 
         def reward_fn(state: SubjectiveState, action: Action) -> int:
             done = done_fn(state, action)
-            if done:
-                return 0
-            return -1
+            return 0 if done else -1
 
         action_representation_module = OneHotActionTensorRepresentationModule(
             env.action_space.n
